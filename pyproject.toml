@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zoxide"
+version = "1.4.7"
+description = "A Python re-implementation of zoxide, the smarter cd command"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [{ name = "Isaac Onagh" }]
+dependencies = []
+
+[project.scripts]
+zoxide = "zoxide.cli:main"
+
+[tool.setuptools]
+packages = ["zoxide", "zoxide.shell"]
