@@ -1,19 +1,64 @@
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "zoxide"
 version = "1.4.7"
-description = "A Python re-implementation of zoxide, the smarter cd command"
+description = 'zoxide written in python'
 readme = "README.md"
 requires-python = ">=3.8"
-license = { text = "MIT" }
-authors = [{ name = "Isaac Onagh" }]
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Isaac Onagh", email = "yesnacoc@gmail.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
 dependencies = []
 
 [project.scripts]
 zoxide = "zoxide.cli:main"
 
-[tool.setuptools]
-packages = ["zoxide", "zoxide.shell"]
+[project.urls]
+Documentation = "https://github.com/i4147/zoxide#readme"
+Issues = "https://github.com/i4147/zoxide/issues"
+Source = "https://github.com/i4147/zoxide"
+
+[tool.hatch.version]
+path = "src/zoxide/__about__.py"
+
+[tool.hatch.envs.types]
+extra-dependencies = [
+  "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/zoxide tests}"
+
+[tool.coverage.run]
+source_pkgs = ["zoxide", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/zoxide/__about__.py",
+]
+
+[tool.coverage.paths]
+zoxide = ["src/zoxide", "*/zoxide/src/zoxide"]
+tests = ["tests", "*/zoxide/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]

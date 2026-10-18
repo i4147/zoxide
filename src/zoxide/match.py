@@ -1,20 +1,6 @@
-"""Matching and ranking logic mirroring zoxide's `query` behaviour.
-
-Rules (same spirit as upstream zoxide):
-  - Each keyword must appear as a case-insensitive substring somewhere in the
-    path, in order is NOT required for anywhere except the last keyword.
-  - The LAST keyword must match against the final path component (basename)
-    unless the flag `--all-substring`/no-basename-restriction is used.  This
-    is exactly how zoxide behaves by default: it requires the last keyword to
-    be found in the basename (this is what makes `z foo` jump to
-    `/a/b/foo-project` and not `/a/b/foo-project/unrelated`).
-  - Results are ordered by frecency score, descending.
-"""
-
 from __future__ import annotations
-
-import time
 from pathlib import Path
+import time
 from typing import Iterable, List, Optional
 
 from .db import Database, Entry

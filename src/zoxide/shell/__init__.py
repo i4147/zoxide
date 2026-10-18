@@ -1,6 +1,6 @@
 from __future__ import annotations
-
 from string import Template
+
 
 BASH_TMPL = Template(r"""
 # =============================================================================

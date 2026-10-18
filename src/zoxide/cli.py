@@ -1,25 +1,10 @@
-"""Command line interface for zoxide:
-
-    zoxide add <path>
-    zoxide query [--list|-l] [--interactive|-i] [--score] [--exclude PATH] keywords...
-    zoxide remove <path>
-    zoxide edit -- <rank> <path>      (edit / set score directly)
-    zoxide import <path>              (import from real zoxide's db.zo)
-    zoxide init <shell>
-    zoxide --version
-
-`z` and `zi` wrapper functions are installed via `zoxide init <shell>` and
-call back into `zoxide query` / `zoxide add`.
-"""
-
 from __future__ import annotations
-
 import argparse
+from pathlib import Path
 import shutil
 import subprocess
 import sys
 import time
-from pathlib import Path
 from typing import List, Optional
 
 from . import __version__
@@ -107,10 +92,6 @@ def cmd_edit(args: argparse.Namespace) -> int:
 
 
 def cmd_import(args: argparse.Namespace) -> int:
-    """Import entries from a real zoxide db.zo (bincode) OR a simple text
-    dump produced by `zoxide query -l --score` from the original tool, or a
-    z.sh/autojump style text database ("rank|timestamp|path" or
-    "timestamp:rank:path")."""
     src = Path(args.path).expanduser()
     if not src.exists():
         _print_err(f"zoxide import: file not found: {src}")
@@ -121,7 +102,7 @@ def cmd_import(args: argparse.Namespace) -> int:
     text = None
     try:
         text = src.read_text(errors="ignore")
-    except Exception as exc:  # pragma: no cover
+    except Exception as exc:
         _print_err(f"zoxide import: cannot read file: {exc}")
         return 1
 

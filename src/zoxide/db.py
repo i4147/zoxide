@@ -1,24 +1,16 @@
-"""Database layer: stores (path, rank, last_accessed) entries with a
-frecency (frequency + recency) score, using the same aging algorithm as the
-original Rust `zoxide`.
-"""
-
 from __future__ import annotations
-
+from dataclasses import asdict, dataclass, field
 import json
 import os
-import time
-from dataclasses import asdict, dataclass, field
 from pathlib import Path
+import time
 from typing import List, Optional
+
 
 HOUR = 3600.0
 DAY = 24 * HOUR
 WEEK = 7 * DAY
 
-# When the sum of all ranks exceeds this, every rank is scaled down by
-# AGE_FACTOR and entries that fall below 1.0 are dropped. This keeps the
-# database bounded without ever needing a hard entry-count limit.
 MAX_AGE = 10_000.0
 AGE_FACTOR = 0.9
 
@@ -44,7 +36,6 @@ class Entry:
     last_accessed: float
 
     def frecency(self, now: float) -> float:
-        """Score combining visit frequency (rank) and recency."""
         age = now - self.last_accessed
         if age < HOUR:
             multiplier = 4.0
@@ -64,7 +55,6 @@ class Database:
         self._dirty = False
         self._load()
 
-    # -- persistence ---------------------------------------------------
     def _load(self) -> None:
         if not self.path.exists():
             self.entries = []
@@ -76,7 +66,6 @@ class Database:
                 for e in raw.get("entries", [])
             ]
         except (json.JSONDecodeError, KeyError, TypeError, ValueError):
-            # Corrupt DB: start fresh rather than crashing the shell hook.
             self.entries = []
 
     def save(self) -> None:
@@ -87,7 +76,6 @@ class Database:
         os.replace(tmp, self.path)
         self._dirty = False
 
-    # -- mutation --------------------------------------------------------
     def add(self, path: str, now: Optional[float] = None, weight: float = 1.0) -> None:
         now = time.time() if now is None else now
         norm = _normalize(path)
@@ -126,7 +114,6 @@ class Database:
         return False
 
     def prune_missing(self) -> int:
-        """Remove entries whose directory no longer exists. Returns count removed."""
         before = len(self.entries)
         self.entries = [e for e in self.entries if Path(e.path).is_dir()]
         removed = before - len(self.entries)
@@ -138,7 +125,6 @@ class Database:
 def _normalize(path: str) -> str:
     p = os.path.expanduser(path)
     p = os.path.abspath(p) if not os.path.isabs(p) else p
-    # Strip trailing slash (except root).
     if len(p) > 1 and p.endswith(("/", os.sep)):
         p = p.rstrip("/").rstrip(os.sep)
     return p
